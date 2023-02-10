@@ -1,18 +1,37 @@
 import Head from 'next/head';
-import Image from 'next/image';
+import { GetStaticProps } from 'next';
 
-export default function Home() {
+import MainBanner from '@/components/HomeBanner';
+import MovieList from '@/components/MovieList';
+import MainLayout from '@/layouts/MainLayout';
+import { getNowPlayingMovies } from '@/services';
+
+import type { Movie } from '@/types';
+import { imageURL } from '@/constants';
+
+type HomeProps = { allMovies: Movie[] };
+
+export default function Home({ allMovies }: HomeProps) {
   return (
     <>
       <Head>
-        <title>Streaming Service</title>
         <meta name="description" content="Streaming service web practice" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
-        <h1>Practicing Web Streaming Service</h1>
-      </main>
+      <MainLayout title="Home">
+        <MainBanner movie={allMovies[0]} />
+        <MovieList data={allMovies} />
+      </MainLayout>
     </>
   );
 }
+
+export const getStaticProps: GetStaticProps = async () => {
+  const allMovies: Movie[] = await getNowPlayingMovies();
+  return {
+    props: {
+      allMovies,
+    },
+  };
+};
